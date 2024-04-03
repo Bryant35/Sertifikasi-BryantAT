@@ -48,14 +48,17 @@
                     <td>{{$buku->tahun_terbit}}</td>
                     <td>{{$buku->Rak}}</td>
                     <td>{{$buku->stok}}</td>
-                    <td><img src="{{$buku->image_path}}"></img></td>
+                    <td><img src="{{ asset('storage/img/'. $buku->image_path) }}"></img></td>
                     @if(Session::has('admin'))
                     <td>
+                        <!-- method untuk POST -->
                         <form action="/admin/koleksi/edit" method="POST">
                             @csrf
                             <input type="hidden" name="idBuku" value="{{$buku->id_buku}}">
-                            <input type="submit" value="Update">
+                            <!-- <input type="submit" value="Update"> -->
                         </form>
+                        <!-- button untuk method get -->
+                        <!-- <a class="btn" href="/admin/koleksi/edit/{{$buku->id_buku}}">button</a> -->
                     </td>
                     @endif
                     </tr>

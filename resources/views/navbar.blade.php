@@ -38,9 +38,13 @@
                         </ul>
                     </li>
                 </ul>
+                    
+                    <label class="me-3">Admin : {{Session::get('admin')}}</label>
+                    
                     <a class="btn btn-outline-success" href="/logout">Logout</a>
                     @elseif(Session::has('user'))
                 </ul>
+                    <label class="me-3">User : {{Session::get('user')}}</label>
                     <a class="btn btn-outline-success" href="/logout">Logout</a>
                     @else
                 </ul>   

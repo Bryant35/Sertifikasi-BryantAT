@@ -17,6 +17,34 @@
         <img src="img/contoh-logo.jpg" class="rounded" style="max-width: 25%" alt="Contoh Logo">
     </div>
         @if(Session::has('admin') || Session::has('user'))
+            @if(Session::has('reminder'))
+                <label>Pengingat pengembalian buku</label>
+        <table class="table table-striped mb-3 my-4">
+            <!-- Judul Tabel -->
+            <thead>
+                <tr>
+                <th scope="col">Judul</th>
+                <th scope="col">Pengarang</th>
+                <th scope="col">Penerbit</th>
+                <th scope="col">Tahun Terbit</th>
+                <th scope="col">Sisa Hari</th>
+            </tr>
+            </thead>
+            <!-- Isi Tabel -->
+            <tbody>
+                @foreach ($notNullReminder as $data)
+                    <tr>
+                    <td>{{$data->Judul}}</td>
+                    <td>{{$data->Pengarang}}</td>
+                    <td>{{$data->Penerbit}}</td>
+                    <td>{{$data->tahun_terbit}}</td>
+                    <td>{{$data->Stok}}</td>
+                    <td>{{$data->Popularitas}}</td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+            @endif
         @else
         <div class="container text-center">
             <div class="row align-items-start">
@@ -30,6 +58,7 @@
             </div>
         </div>
         @endif
+        <label>Rekomendasi Buku</label>
         <table class="table table-striped mb-3 my-4">
             <!-- Judul Tabel -->
             <thead>

@@ -8,6 +8,7 @@ use App\Models\AdminModel;
 use DB;
 use Session;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Storage;
 
 class AdminController extends Controller
 {
@@ -16,10 +17,32 @@ class AdminController extends Controller
         return view('login');
     }
 
+    public function accountCheck(){
+        if(Session::has('user')){
+            $usernameUser = Session::get('user');
+        }elseif(Session::has('admin')){
+            $usernameAdmin = Session::get('admin');
+        }else{
+            $usernameUser = null;
+        }
+        $password = Session::get('pass');
+        // dd($username, $password);
+        if(Session::has('user') && Session::has('pass')){
+            $res = Session::get('user');
+            return $res;
+        }elseif(Session::has('admin') && Session::has('pass')){
+            $res = Session::get('admin');
+            return $res;
+        }else{
+            return false;
+        }
+    }
+
     //Login
     public function adminAuthenticate(Request $req)
     {
         //ambil data dari textField login page
+        
         $password = $req->input('PasswordInput');
         $username = $req->input('UsernameInput');
 
@@ -41,7 +64,10 @@ class AdminController extends Controller
         }else if($cekloginUser == true){
             //2.a. Jika KETEMU, maka session LOGIN dibuat(session untuk menyimpan data pada device)
             Session::flush();
+            $getIDuser = $model->getIDUser($username, $password);
+            // dd($getIDuser);
             Session::put('user', $username);
+            Session::put('id', $getIDuser[0]);
             Session::put('pass', $password);
             Session::flash('success', 'Login Success!');
             return redirect('/welcome');
@@ -55,10 +81,18 @@ class AdminController extends Controller
     public function welcomeView(){
         $model = new AdminModel;
         $data = $model->tabelView();
+        $idUser = Session::get('id');
+        if(Session::has('user')){
+            $reminder = $model->reminderUser($idUser);
+            if($reminder != NULL){
+                Session::put('reminder', $reminder);
+            }
+        }else{
+            $reminder = NULL;
+        }
 
-        return view('overview.home', compact('data'));
+        return view('overview.home', compact('data', 'reminder'));
     }
-
 
     //logout dari session
     public function logoutSession(){
@@ -93,17 +127,25 @@ class AdminController extends Controller
     public function koleksiBuku(){
         $model = new AdminModel;
         $data = $model->bukuView();
+        // dd($check);
+
+        return view('koleksi.listBuku', compact('data'));
+        
 
         //Compact untuk passing data dari $data ke view blade
-        return view('koleksi.listBuku', compact('data'));
     }
 
     //select edit buku yang diseleksi
-    public function editBuku(Request $req){
-        $id_buku = $req->input('idBuku');
-        $model = new AdminModel;
-        $data = $model->selectBuku($id_buku);
-        return view('koleksi.editBuku', compact('data'));
+    public function editBuku(Request $req, $id){
+        $check = $this->accountCheck();
+        if($check == 'admin'){
+            // $id_buku = $req->input('idBuku');
+            $model = new AdminModel;
+            $data = $model->selectBuku($id);
+            return view('koleksi.editBuku', compact('data'));
+        }else{
+            return redirect('/koleksi');
+        }
     }
 
     //update-edit-delete buku
@@ -121,6 +163,7 @@ class AdminController extends Controller
 
             $model = new AdminModel;
             $data = $model->updateBuku($id_buku, $judulBuku, $pengarang, $penerbit, $tahunTerbit, $Rak, $stok, $images);
+            
         }elseif($req->submit == "Delete"){
             $id_buku = $req->Input('idBuku');
 
@@ -141,15 +184,16 @@ class AdminController extends Controller
         $Rak = $req->input('Rak');
         $stokBuku = $req->input('stokBuku');
         $fotoBuku = $req->input('fotoBuku');
+        // dd($fotoBuku);
         
         if($stokBuku == NULL){
             $stokBuku = 0;
         }
         
         if($judulBuku != NULL){
+            $req->file('fotoBuku')->store('fotoBuku');
             $model = new AdminModel;
             $model = $model->inputBuku($judulBuku, $Pengarang, $Penerbit, $tahunTerbit, $Rak, $stokBuku, $fotoBuku);
-            
             // if($req->hasFile('fotoBuku')){
             //     $file= $request->file('fotoBuku');
             //     $filename= date('YmdHi').$file->getClientOriginalName();
@@ -341,8 +385,9 @@ class AdminController extends Controller
             $tanggal_harus_kembali = $req->Input('tanggal_harus_kembali');
 
             $model = new AdminModel;
-            $data = $model->updatePeminjaman($judul, $id_anggota, $tanggal_peminjaman, $tanggal_pengembalian, $tanggal_harus_kembali, $statusPengembalian);
-            Session::flash('update','Update Pada ID {{$id_peminjaman}} telah berhasih');
+            $data = $model->updatePeminjaman($id_peminjaman, $tanggal_peminjaman, $tanggal_harus_kembali, $statusPengembalian);
+            
+            Session::flash('update','Update Pada ID "' . $id_peminjaman . '" telah berhasil');
         }
         else if($req->submit == "Delete")
         {

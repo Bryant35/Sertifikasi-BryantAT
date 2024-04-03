@@ -39,6 +39,7 @@
                 <th scope="col">Tanggal Peminjaman</th>
                 <th scope="col">Tanggal Pengembalian</th>
                 <th scope="col">Batas Pengembalian</th>
+                <th scope="col">Sisa Waktu</th>
                 <th scope="col">Status Peminjaman</th>
                 <th scope="col"></th>
                 </tr>
@@ -53,14 +54,17 @@
                     <td>{{$peminjaman->tanggal_peminjaman}}</td>
                     <td>{{$peminjaman->tanggal_pengembalian}}</td>
                     <td>{{$peminjaman->tanggal_harus_kembali}}</td>
+                    <td>{{$peminjaman->sisa_hari}}</td>
                     <td>{{$peminjaman->status_pengembalian}}</td>
 
                     <td>
+                        @if($peminjaman->tanggal_pengembalian == NULL || $peminjaman->status_pengembalian == "Belum Kembali")
                         <form action="/admin/peminjaman/editStatusPeminjaman" method="POST">
                             @csrf
                             <input type="hidden" name="idPeminjaman" value="{{$peminjaman->id_peminjaman}}">
                             <input type="submit" value="Update">
                         </form>
+                        @endif
                     </td>
                     </tr>
                     

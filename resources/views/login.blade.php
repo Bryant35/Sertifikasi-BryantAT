@@ -13,7 +13,7 @@
 <body>
     @include('navbar')
     <div class="container">
-        <form method="POST" action="/admin/authenticate">
+        <form method="POST" action="/login">
             @csrf
             <div class="mb-3">
                 <label for="exampleInputEmail1" class="form-label">Username</label>

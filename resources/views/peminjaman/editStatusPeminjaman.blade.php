@@ -21,15 +21,15 @@
             </div>
             <div class="mb-3">
                 <label class="form-label">Judul Buku</label>
-                <input type="name" class="form-control" id="" name="judul" value="{{$data[0]->judul}}">
+                <input type="name" class="form-control" id="" readonly="readonly" name="judul" value="{{$data[0]->judul}}">
             </div>
             <div class="mb-3">
                 <label class="form-label">Nama Peminjam</label>
-                <input type="name" class="form-control" id="" name="id_anggota" value="{{$data[0]->id_anggota}} - {{$data[0]->nama_anggota}}">
+                <input type="name" class="form-control" id="" name="id_anggota" readonly="readonly" value="{{$data[0]->id_anggota}} - {{$data[0]->nama_anggota}}">
             </div>
             <div class="mb-3">
                 <label class="form-label">Tanggal Peminjaman</label>
-                <input type="date" class="form-control" id="" name="tanggal_peminjaman" value="{{$data[0]->tanggal_peminjaman}}">
+                <input type="date" class="form-control" id="" name="tanggal_peminjaman" readonly="readonly" value="{{$data[0]->tanggal_peminjaman}}">
             </div>
             @if($data[0]->tanggal_pengembalian != NULL)
             <div class="mb-3">
@@ -43,7 +43,7 @@
             </div>
             <div class="mb-3">
             <label for="" class="form-label">Status Pengembalian</label>
-            <input type="text" name="statusPengembalian" style="background-color: #F4F9FF;" list="listStatus" id="id_buku" class="form-control dropbtn bg-body" placeholder="Cari Judul Buku" value="{{$data[0]->status_pengembalian}}" >
+            <input type="text" name="statusPengembalian" style="background-color: #F4F9FF;" list="listStatus" id="id_buku" class="form-control dropbtn bg-body" placeholder="Input status pengembalian" value="{{$data[0]->status_pengembalian}}" >
                 <datalist id="listStatus">
                     <option value="Belum Kembali"></option>
                     <option value="Tepat Waktu"></option>

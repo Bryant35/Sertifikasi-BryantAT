@@ -48,6 +48,20 @@ class AdminModel extends Model
         }
         return false;
     }
+    public function getIDUser($username, $password){
+        $user = "SELECT id_anggota ". 
+                "FROM anggota ". 
+                "WHERE username_anggota= '".$username."' AND password_anggota= '".$password."' AND delete_anggota = 0; ";
+        $res = DB::select($user);
+        return $res;
+    }
+
+    public function reminderUser($idUser){
+        $reminder = "SELECT judul, `tanggal_peminjaman`, `tanggal_harus_kembali`, IF(ISNULL(tanggal_pengembalian = 1), TO_DAYS(tanggal_harus_kembali) - TO_DAYS(now()), TO_DAYS(tanggal_harus_kembali) - TO_DAYS(tanggal_pengembalian)) AS `sisa_hari` FROM `peminjaman` JOIN buku JOIN anggota WHERE anggota.id_anggota = peminjaman.id_anggota && buku.id_buku = peminjaman.id_buku && status_pengembalian = 'Belum Kembali' && peminjaman.id_anggota = '".$idUser->id_anggota."';";
+        $res = DB::select($reminder);
+
+        return $res;
+    }
 
     //query view home
     public function tabelView(){
@@ -91,14 +105,19 @@ class AdminModel extends Model
         $insert = "INSERT INTO `buku`(`id_buku`, `judul`, `pengarang`, `penerbit`, `tahun_terbit`, `Rak`, `stok`, `image_path`, `delete_buku`)". 
                 "VALUES ('','".$judulBuku."','".$Pengarang."','$Penerbit',".$tahunTerbit.",'".$Rak."',".$stokBuku.",'".$fotoBuku."',0);";
         $res = DB::insert($insert);
-
+        
         return $res;
     }
 
     //Query Update Buku
     public function updateBuku($id_buku, $judulBuku, $pengarang, $penerbit, $tahunTerbit, $Rak, $stok, $images){
-        $update = "UPDATE `buku` SET `judul`='".$judulBuku."',`pengarang`='".$pengarang."',`penerbit`='".$penerbit."',". 
-                    "`tahun_terbit`=".$tahunTerbit.",`Rak`='".$Rak."',`stok`=".$stok.",`image_path`='".$images."' WHERE `id_buku` = '".$id_buku."';";
+        if($images == NULL){
+            $update = "UPDATE `buku` SET `judul`='".$judulBuku."',`pengarang`='".$pengarang."',`penerbit`='".$penerbit."',". 
+                        "`tahun_terbit`=".$tahunTerbit.",`Rak`='".$Rak."',`stok`=".$stok." WHERE `id_buku` = '".$id_buku."';";
+        }else{
+            $update = "UPDATE `buku` SET `judul`='".$judulBuku."',`pengarang`='".$pengarang."',`penerbit`='".$penerbit."',". 
+                        "`tahun_terbit`=".$tahunTerbit.",`Rak`='".$Rak."',`stok`=".$stok.",`image_path`='".$images."' WHERE `id_buku` = '".$id_buku."';";
+        }
         $res = DB::update($update);
         return $res;
     }   
@@ -215,7 +234,7 @@ class AdminModel extends Model
 
     //list status peminjaman
     public function listPeminjam(){
-        $join = "SELECT id_peminjaman, p.id_anggota as `id_anggota`, nama_anggota, judul, tanggal_peminjaman, tanggal_pengembalian, tanggal_harus_kembali, status_pengembalian ". 
+        $join = "SELECT id_peminjaman, p.id_anggota as `id_anggota`, nama_anggota, judul, tanggal_peminjaman, tanggal_pengembalian, tanggal_harus_kembali, IF(ISNULL(tanggal_pengembalian = 1), TO_DAYS(tanggal_harus_kembali) - TO_DAYS(now()), TO_DAYS(tanggal_harus_kembali) - TO_DAYS(tanggal_pengembalian)) AS `sisa_hari` ,status_pengembalian ". 
                 "FROM peminjaman as `p` JOIN buku as `b` JOIN anggota as `a` WHERE p.id_buku = b.id_buku && p.id_anggota = a.id_anggota && delete_pinjam = 0 ". 
                 "ORDER BY `p`.`tanggal_pengembalian` ASC, `p`.`tanggal_harus_kembali` ASC;";
         $res = DB::select($join);
@@ -230,6 +249,14 @@ class AdminModel extends Model
         $res = DB::select($join);
 
         return $res;
+    }
+
+    //update Peminjaman
+    public function updatePeminjaman($id_peminjaman, $tanggal_peminjaman, $tanggal_harus_kembali, $statusPengembalian){
+        $update = "UPDATE `peminjaman` SET tanggal_peminjaman = '".$tanggal_peminjaman."', tanggal_harus_kembali = '".$tanggal_harus_kembali."', status_pengembalian = '".$statusPengembalian."' WHERE id_peminjaman = '".$id_peminjaman."';";
+        $res = DB::update($update);
+
+        return true;
     }
 
     //delete Logical peminjaman 

@@ -30,7 +30,10 @@ Route::get('/navigation', function () {
 
 
 //Login & Logout & Register
-Route::get('/login', 'App\Http\Controllers\AdminController@adminLogin');
+Route::prefix('login')->group(function () {
+    Route::get('', 'App\Http\Controllers\AdminController@adminLogin');
+    Route::post('', 'App\Http\Controllers\AdminController@adminAuthenticate');
+});
 Route::get('/logout', 'App\Http\Controllers\AdminController@logoutSession');
 
 //Session Register beserta empty data handling
@@ -44,14 +47,15 @@ Route::prefix('register')->group(function () {
 //Route ke page koleksi dengan menampilkan data buku-buku untuk user
 Route::get('/koleksi', 'App\Http\Controllers\AdminController@koleksiBuku');
 
+
 //Admin Page beserta page2 nya
 Route::prefix('admin')->group(function () {
     //melakukan verifikasi jika admin
-    Route::post('/authenticate', 'App\Http\Controllers\AdminController@adminAuthenticate');
     
     //routing page koleksi, add, edit, dan delete buku
     Route::prefix('koleksi')->group(function(){
         Route::get('', 'App\Http\Controllers\AdminController@koleksiBuku');
+        // Route::get('/edit/{id}', 'App\Http\Controllers\AdminController@editBuku');
         Route::post('/edit', 'App\Http\Controllers\AdminController@editBuku');
         Route::post('/updateBuku', 'App\Http\Controllers\AdminController@updateBuku');
         Route::get('/tambah', function () {

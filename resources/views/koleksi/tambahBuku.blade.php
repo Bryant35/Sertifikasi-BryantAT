@@ -13,7 +13,7 @@
 <body>
     @include('navbar')
     <div class="container">
-        <form action="/admin/koleksi/tambahBuku" method="POST">
+        <form method="POST" action="/admin/koleksi/tambahBuku" >
             @csrf
             <div class="mb-3">
                 <label for="inputJudul" class="form-label">Judul Buku</label>
